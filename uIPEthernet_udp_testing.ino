@@ -14,54 +14,36 @@ int packetSize; //Size of Packet
 EthernetUDP Udp; //Define UDP Object
 
 void setup() {
-  
-Serial.begin(9600); //Turn on Serial Port
-  Ethernet.begin(mac, ip); //Initialize Ethernet
-//  if (Ethernet.begin(mac) == 0) {
-//    Serial.println("Failed to configure Ethernet using DHCP");
-//    // no point in carrying on, so do nothing forevermore:
-//    for(;;)
-//      ;
-//  }
-  Serial.print("My IP address: ");
-  for (byte thisByte = 0; thisByte < 4; thisByte++) {
-    // print the value of each byte of the IP address:
-    Serial.print(Ethernet.localIP()[thisByte], DEC);
-    Serial.print("."); 
-  }
-  int success = Udp.begin(localPort); //Initialize Udp
-  Serial.print("\ninitialize: ");
-  Serial.println(success ? "success" : "failed");
-  delay(1500); //delay
+  do{
+    Serial.begin(9600); //Turn on Serial Port
+    Ethernet.begin(mac, ip); //Initialize Ethernet
+  //  if (Ethernet.begin(mac) == 0) {
+  //    Serial.println("Failed to configure Ethernet using DHCP");
+  //    // no point in carrying on, so do nothing forevermore:
+  //    for(;;)
+  //      ;
+  //  }
+    Serial.print("My IP address: ");
+    for (byte thisByte = 0; thisByte < 4; thisByte++) {
+      // print the value of each byte of the IP address:
+      Serial.print(Ethernet.localIP()[thisByte], DEC);
+      Serial.print("."); 
+    }
+    int success = Udp.begin(localPort); //Initialize Udp
+    Serial.print("\ninitialize: ");
+    Serial.println(success ? "success" : "failed");
+    delay(1500); //delay
+  } while (success);
 }
 
 void loop() {
+  // TODO: add wait for start command or something
+  //packetSize = Udp.parsePacket(); //Read the packetSize
   
-  packetSize = Udp.parsePacket(); //Read the packetSize
-  
-  if(packetSize>0){ //Check to see if a request is present
-  
-    Udp.read(packetBuffer, UDP_TX_PACKET_MAX_SIZE); //Reading the data request on the Udp
-    String datReq(packetBuffer); //Convert packetBuffer array to string datReq
-  
-    if (datReq =="Red") { //See if Red was requested
-  
-      Udp.beginPacket(Udp.remoteIP(), Udp.remotePort());  //Initialize Packet send
-      Udp.print("You are Asking for Red"); //Send string back to client 
-      Udp.endPacket(); //Packet has been sent
-    }
-    if (datReq =="Green") { //See if Green was requested
-  
-      Udp.beginPacket(Udp.remoteIP(), Udp.remotePort());  //Initialize Packet send
-      Udp.print("You are Asking for Green"); //Send string back to client 
-      Udp.endPacket(); //Packet has been sent
-    }
-    if (datReq =="Blue") { //See if Red was requested
-  
-      Udp.beginPacket(Udp.remoteIP(), Udp.remotePort());  //Initialize Packet send
-      Udp.print("You are Asking for Blue"); //Send string back to client 
-      Udp.endPacket(); //Packet has been sent
-    }
-  }
-  memset(packetBuffer, 0, UDP_TX_PACKET_MAX_SIZE);
+  Udp.beginPacket(Udp.remoteIP(), Udp.remotePort());  //Initialize Packet send
+  Udp.print("You are Asking for Red"); //Send string back to client 
+  Udp.endPacket(); //Packet has been sent
+  delay(2000);
+
+  //memset(packetBuffer, 0, UDP_TX_PACKET_MAX_SIZE);
 }
